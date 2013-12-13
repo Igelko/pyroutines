@@ -84,7 +84,7 @@ def unpack(input_dir, input_file, outputdir):
 def main():
     args = parse_arguments()
     print args
-    if args.directory:
+    if "directory" in args:
 
         for fname in os.listdir(args.directory):
             if fnmatch(fname, args.mask):
