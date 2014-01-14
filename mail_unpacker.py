@@ -10,7 +10,6 @@ import email
 import errno
 import mimetypes
 import argparse
-import encodings
 import subprocess
 
 from email.header import decode_header
@@ -42,16 +41,6 @@ def parse_arguments():
     a = parser.parse_args()
     a.targets = map(lambda x: '.'+x, a.targets.lower().split(":"))
     return a
-
-
-def force_decode(string, codecs=codecs):
-    for i in codecs:
-        try:
-            return string.decode(i)
-        except:
-            pass
-    else:
-        raise Exception("Unknown codec!")
 
 
 check_invalid = re.compile('[^\w\-_\. ]')
@@ -95,12 +84,11 @@ def unpack_msg(input_file, output_dir, cfg):
                     decoded = decode_header(filename)
                     filename = decoded[0][0].decode(decoded[0][1].upper())
                 else:
-                    if isinstance(filename, str):
-                        filename = force_decode(filename)
-                filename = only_input_filename.decode("utf-8") + "_" + escape_chars(filename)
+                    filename = escape_chars(filename)
+                filename = only_input_filename.decode("utf-8") + "_" + filename
                 ext = os.path.splitext(filename)[1].lower()
             else:
-                ext = mimetypes.guess_extension(part.get_content_type())
+                ext = mimetypes.guess_extension(part.get_content_type()).lower()
                 if not ext:
                 # Use a generic bag-of-bits extension
                     ext = '.bin'
