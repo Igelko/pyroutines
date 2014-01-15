@@ -17,9 +17,8 @@ from fnmatch import fnmatch
 
 from tempdir import TempDir
 
-codecs = sorted(encodings.aliases.aliases.values())
 
-
+fs_enc = sys.getfilesystemencoding()
 target_exts = []
 arch_exts = ['.rar', '.zip', '.qwe']
 
@@ -88,12 +87,12 @@ def unpack_msg(input_file, output_dir, cfg):
                 filename = only_input_filename.decode("utf-8") + "_" + filename
                 ext = os.path.splitext(filename)[1].lower()
             else:
-                ext = mimetypes.guess_extension(part.get_content_type()).lower()
+                ext = mimetypes.guess_extension(part.get_content_type())
                 if not ext:
                 # Use a generic bag-of-bits extension
                     ext = '.bin'
                 filename =u'%s_part-%03d%s' % (only_input_filename, counter, ext)
-            filename = filename.encode("utf-8")
+            filename = filename.encode(fs_enc)
             if ext in cfg.targets:
                 with open(os.path.join(output_dir, filename), 'wb') as of:
                     of.write(part.get_payload(decode=True))
